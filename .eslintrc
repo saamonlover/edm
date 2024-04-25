@@ -1,0 +1,7 @@
+{
+  "extends": ["prettier"],
+  "rules": {},
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  }
+}
