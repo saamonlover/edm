@@ -1,4 +1,3 @@
-const { testServer } = require('../../../config.json')
 const areCommandsDifferent = require('../../utils/are-commands-different')
 const getApplicationCommands = require('../../utils/get-application-commands')
 const getLocalCommands = require('../../utils/get-local-commands')
@@ -6,7 +5,7 @@ const getLocalCommands = require('../../utils/get-local-commands')
 module.exports = async (client) => {
   try {
     const localCommands = getLocalCommands()
-    const applicationCommands = await getApplicationCommands(client, testServer)
+    const applicationCommands = await getApplicationCommands(client)
 
     for (const localCommand of localCommands) {
       const { name, description, options } = localCommand.data
@@ -37,14 +36,6 @@ module.exports = async (client) => {
         console.log(`> [update]: registered command: "${name}".`)
       }
     }
-
-    /* // Clear all global commands
-    client.application.commands
-      .set([])
-      .then(() => console.log('> [] cleared all global commands'))
-      .catch((err) =>
-        console.error(`> [err]: error clearing global commands: ${err}`),
-      ) */
   } catch (error) {
     console.error(`> [err]: there was an error ${error}`)
   }
