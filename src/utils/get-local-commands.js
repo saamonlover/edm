@@ -10,15 +10,11 @@ module.exports = (exceptions) => {
   )
 
   for (const commandCategory of commandCategories) {
-    const subCategories = getAllFiles(commandCategory, true)
+    const commandFiles = getAllFiles(commandCategory)
 
-    for (const subCategory of subCategories) {
-      const commandFiles = getAllFiles(subCategory)
-
-      for (const commandFile of commandFiles) {
-        const commandObject = require(commandFile)
-        localCommands.push(commandObject)
-      }
+    for (const commandFile of commandFiles) {
+      const commandObject = require(commandFile)
+      localCommands.push(commandObject)
     }
   }
 
