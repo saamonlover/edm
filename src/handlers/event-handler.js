@@ -22,9 +22,6 @@ module.exports = (client) => {
 
     client.on(eventName, async (arg) => {
       for (const eventFile of eventFiles) {
-        // Avoid running schema tests
-        if (eventFile.endsWith('schema-tests.js')) continue
-
         const eventFunction = require(eventFile)
         await eventFunction(client, arg)
       }
