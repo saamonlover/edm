@@ -16,8 +16,8 @@ const client = new Client({
 
 ;(async () => {
   try {
+    // Handle events
     eventHandlers(client)
-
     client.login(process.env.BOT_TOKEN)
   } catch (error) {
     console.log('> src/index.js [err]: error with db')
