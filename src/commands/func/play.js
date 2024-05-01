@@ -3,12 +3,13 @@ const {
   joinVoiceChannel,
   createAudioPlayer,
   createAudioResource,
+  NoSubscriberBehavior,
 } = require('@discordjs/voice')
 
 const SpotifyWebApi = require('spotify-web-api-node')
 const YouTube = require('youtube-sr').default
 
-const ytdl = require('ytdl-core')
+const play = require('play-dl')
 
 module.exports = {
   callback: async (client, interaction) => {
@@ -63,12 +64,16 @@ module.exports = {
       adapterCreator: channel.guild.voiceAdapterCreator,
     })
 
-    // Create a player
-    const player = createAudioPlayer()
-
     // Play the track
-    const stream = ytdl(ytTrackUrl, { filter: 'audioonly' })
-    const resource = createAudioResource(stream)
+    const stream = await play.stream(ytTrackUrl)
+    const resource = createAudioResource(stream.stream, {
+      inputType: stream.type,
+    })
+    let player = createAudioPlayer({
+      behaviors: {
+        noSubscriber: NoSubscriberBehavior.Play,
+      },
+    })
     player.play(resource)
     connection.subscribe(player)
 
