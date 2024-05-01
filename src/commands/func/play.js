@@ -53,10 +53,15 @@ module.exports = {
     })
     const ytTrackUrl = `https://music.youtube.com/watch?v=${ytSearchResult[0].id}`
 
+    // Defer the reply
+    await interaction.deferReply()
+
     // Join the voice channel
     const channel = interaction.member.voice.channel
     if (!channel) {
-      return interaction.reply('You must be in a voice channel to play music!')
+      return interaction.editReply(
+        'You must be in a voice channel to play music!',
+      )
     }
     const connection = joinVoiceChannel({
       channelId: channel.id,
@@ -81,7 +86,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setDescription(`Playing [${firstTrack.name}](${trackUrl})`)
       .setColor('#FF0000')
-    await interaction.reply({ embeds: [embed] })
+    await interaction.editReply({ embeds: [embed] })
   },
   data: {
     name: 'play',
