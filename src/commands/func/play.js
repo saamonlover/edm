@@ -1,11 +1,13 @@
 const { EmbedBuilder } = require('discord.js')
-
 const {
   joinVoiceChannel,
   createAudioPlayer,
   createAudioResource,
 } = require('@discordjs/voice')
+
 const SpotifyWebApi = require('spotify-web-api-node')
+const YouTube = require('youtube-sr').default
+
 const ytdl = require('ytdl-core')
 
 module.exports = {
@@ -39,6 +41,14 @@ module.exports = {
 
     // Get the track's URL
     const trackUrl = firstTrack.external_urls.spotify
+    const trackName = firstTrack.name
+
+    //
+    const ytSearchResult = await YouTube.search(trackName, {
+      limit: 1,
+      safeSearch: true,
+    })
+    const ytTrackUrl = `https://music.youtube.com/watch?v=${ytSearchResult[0].id}`
 
     // Join the voice channel
     const channel = interaction.member.voice.channel
@@ -55,7 +65,7 @@ module.exports = {
     const player = createAudioPlayer()
 
     // Play the track
-    const stream = ytdl(trackUrl, { filter: 'audioonly' })
+    const stream = ytdl(ytTrackUrl, { filter: 'audioonly' })
     const resource = createAudioResource(stream)
     player.play(resource)
     connection.subscribe(player)
