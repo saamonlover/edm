@@ -106,7 +106,7 @@ module.exports = {
 
       // Interaction reply
       const embed = new EmbedBuilder()
-        .setDescription(`Playing [${track.name}](${trackUrl})`)
+        .setDescription(`Now playing [${track.name}](${trackUrl})`)
         .setColor('#FF0000')
       await interaction.editReply({ embeds: [embed] })
 
