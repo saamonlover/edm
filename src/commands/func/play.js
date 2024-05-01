@@ -42,9 +42,11 @@ module.exports = {
     // Get the track's URL
     const trackUrl = firstTrack.external_urls.spotify
     const trackName = firstTrack.name
+    const artistName = firstTrack.artists[0].name
 
-    //
-    const ytSearchResult = await YouTube.search(trackName, {
+    // Search on YouTube Music
+    const searchQuery = `${trackName} ${artistName} audio`
+    const ytSearchResult = await YouTube.search(searchQuery, {
       limit: 1,
       safeSearch: true,
     })
