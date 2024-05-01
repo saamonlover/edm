@@ -12,7 +12,7 @@ const YouTube = require('youtube-sr').default
 const play = require('play-dl')
 
 module.exports = {
-  callback: async (client, interaction) => {
+  callback: async (_, interaction) => {
     // Establish Spotify API connection
     const spotifyApi = new SpotifyWebApi({
       clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -24,69 +24,95 @@ module.exports = {
     const accessToken = data.body['access_token']
     spotifyApi.setAccessToken(accessToken)
 
-    // Search for the track
-    const track = interaction.options.getString('x')
-    let firstTrack
-    if (track.includes('spotify.com/track/')) {
-      const trackId = track.split('spotify.com/track/')[1].split('?')[0]
+    // Get search input
+    const song = interaction.options.getString('song')
+    const url = interaction.options.getString('url')
+    const input = song || url
+
+    let tracks = []
+    // Track URL
+    if (input.includes('spotify.com/track/')) {
+      const trackId = input.split('spotify.com/track/')[1].split('?')[0]
       const trackData = await spotifyApi.getTrack(trackId)
-      firstTrack = trackData.body
-    } else {
-      const searchResult = await spotifyApi.searchTracks(track)
-      firstTrack = searchResult.body.tracks.items[0]
+      tracks.push(trackData.body)
+    }
+    // Playlist URL
+    else if (input.includes('spotify.com/playlist/')) {
+      const playlistId = input.split('spotify.com/playlist/')[1].split('?')[0]
+      const playlistData = await spotifyApi.getPlaylist(playlistId)
+      const playlistTracks = playlistData.body.tracks.items
+      tracks = playlistTracks.map((item) => item.track)
+    }
+    // Track w/ song name and artist
+    else {
+      const searchResult = await spotifyApi.searchTracks(input)
+      tracks.push(searchResult.body.tracks.items[0])
     }
 
-    if (!firstTrack) {
+    if (tracks.length === 0) {
       return interaction.reply('No tracks were found!')
     }
 
-    // Get the track's URL
-    const trackUrl = firstTrack.external_urls.spotify
-    const trackName = firstTrack.name
-    const artistName = firstTrack.artists[0].name
+    // Play all tracks added
+    let count = 1
+    let connection
+    for (const track of tracks) {
+      // Get the track's meta
+      const trackUrl = track.external_urls.spotify
+      const trackName = track.name
+      const artistName = track.artists[0].name
 
-    // Search on YouTube Music
-    const searchQuery = `${trackName} ${artistName} audio`
-    const ytSearchResult = await YouTube.search(searchQuery, {
-      limit: 1,
-      safeSearch: true,
-    })
-    const ytTrackUrl = `https://music.youtube.com/watch?v=${ytSearchResult[0].id}`
+      // Search on YouTube Music
+      const searchQuery = `${trackName} ${artistName} audio`
+      const ytSearchResult = await YouTube.search(searchQuery, {
+        limit: 1,
+        safeSearch: true,
+      })
+      const ytTrackUrl = `https://music.youtube.com/watch?v=${ytSearchResult[0].id}`
 
-    // Defer the reply
-    await interaction.deferReply()
+      // On first track
+      if (count === 1) {
+        // Defer interaction reply
+        await interaction.deferReply()
 
-    // Join the voice channel
-    const channel = interaction.member.voice.channel
-    if (!channel) {
-      return interaction.editReply(
-        'You must be in a voice channel to play music!',
-      )
+        // Join the voice channel
+        const channel = interaction.member.voice.channel
+        if (!channel) {
+          return interaction.editReply(
+            'You must be in a voice channel to play music!',
+          )
+        }
+        connection = joinVoiceChannel({
+          channelId: channel.id,
+          guildId: channel.guild.id,
+          adapterCreator: channel.guild.voiceAdapterCreator,
+        })
+
+        count++
+      }
+
+      // Play the track
+      const stream = await play.stream(ytTrackUrl)
+      const resource = createAudioResource(stream.stream, {
+        inputType: stream.type,
+      })
+      let player = createAudioPlayer({
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Play,
+        },
+      })
+      player.play(resource)
+      connection.subscribe(player)
+
+      // Interaction reply
+      const embed = new EmbedBuilder()
+        .setDescription(`Playing [${track.name}](${trackUrl})`)
+        .setColor('#FF0000')
+      await interaction.editReply({ embeds: [embed] })
+
+      // Wait for the song to finish
+      await new Promise((resolve) => player.on('idle', resolve))
     }
-    const connection = joinVoiceChannel({
-      channelId: channel.id,
-      guildId: channel.guild.id,
-      adapterCreator: channel.guild.voiceAdapterCreator,
-    })
-
-    // Play the track
-    const stream = await play.stream(ytTrackUrl)
-    const resource = createAudioResource(stream.stream, {
-      inputType: stream.type,
-    })
-    let player = createAudioPlayer({
-      behaviors: {
-        noSubscriber: NoSubscriberBehavior.Play,
-      },
-    })
-    player.play(resource)
-    connection.subscribe(player)
-
-    // Interaction reply
-    const embed = new EmbedBuilder()
-      .setDescription(`Playing [${firstTrack.name}](${trackUrl})`)
-      .setColor('#FF0000')
-    await interaction.editReply({ embeds: [embed] })
   },
   data: {
     name: 'play',
@@ -94,9 +120,15 @@ module.exports = {
     options: [
       {
         type: 3,
-        name: 'x',
-        description: 'Song name / track url',
-        required: true,
+        name: 'song',
+        description: 'Song name and artist',
+        required: false,
+      },
+      {
+        type: 3,
+        name: 'url',
+        description: 'Spotify URL',
+        required: false,
       },
     ],
   },
