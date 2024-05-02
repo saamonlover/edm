@@ -55,6 +55,7 @@ module.exports = {
     // Check if a song is currently playing
     if (global.connection) {
       console.log('> [play] track(s) added')
+      // TODO: change the reply to a temporary embed
       return interaction.reply('Added to queue.')
     }
 
