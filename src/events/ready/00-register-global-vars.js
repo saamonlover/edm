@@ -1,5 +1,5 @@
 module.exports = async () => {
-    global.connection
-    global.player
-    global.tracks = []
+  global.connection
+  global.player
+  global.tracks = []
 }

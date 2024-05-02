@@ -20,10 +20,10 @@ module.exports = (client) => {
       })
       .join('')
 
-    client.on(eventName, async (arg) => {
+    client.on(eventName, async (...args) => {
       for (const eventFile of eventFiles) {
         const eventFunction = require(eventFile)
-        await eventFunction(client, arg)
+        await eventFunction(client, ...args)
       }
     })
   }

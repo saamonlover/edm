@@ -13,6 +13,24 @@ const play = require('play-dl')
 
 module.exports = {
   callback: async (_, interaction) => {
+    // Check if a song is currently playing
+    if (global.connection) {
+      console.log('> [play] track(s) added')
+      const embed = new EmbedBuilder()
+        .setDescription('Track(s) added to the queue')
+        .setColor('#FF0000')
+      const embedMessage = await interaction.reply({
+        embeds: [embed],
+        fetchReply: true,
+      })
+      // Delete the embed message after 5 seconds
+      setTimeout(() => {
+        embedMessage.delete()
+      }, 5000)
+
+      return
+    }
+
     // Establish Spotify API connection
     const spotifyApi = new SpotifyWebApi({
       clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -50,24 +68,6 @@ module.exports = {
 
     if (global.tracks.length === 0) {
       return interaction.reply('No tracks were found!')
-    }
-
-    // Check if a song is currently playing
-    if (global.connection) {
-      console.log('> [play] track(s) added')
-      const embed = new EmbedBuilder()
-        .setDescription('Track(s) added to the queue')
-        .setColor('#FF0000')
-      const embedMessage = await interaction.reply({
-        embeds: [embed],
-        fetchReply: true,
-      })
-      // Delete the embed message after 5 seconds
-      setTimeout(() => {
-        embedMessage.delete()
-      }, 5000)
-
-      return
     }
 
     // Defer interaction reply
