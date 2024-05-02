@@ -55,8 +55,19 @@ module.exports = {
     // Check if a song is currently playing
     if (global.connection) {
       console.log('> [play] track(s) added')
-      // TODO: change the reply to a temporary embed
-      return interaction.reply('Added to queue.')
+      const embed = new EmbedBuilder()
+        .setDescription('Track(s) added to the queue')
+        .setColor('#FF0000')
+      const embedMessage = await interaction.reply({
+        embeds: [embed],
+        fetchReply: true,
+      })
+      // Delete the embed message after 5 seconds
+      setTimeout(() => {
+        embedMessage.delete()
+      }, 5000)
+
+      return
     }
 
     // Defer interaction reply
