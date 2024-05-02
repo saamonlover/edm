@@ -29,24 +29,23 @@ module.exports = {
     const url = interaction.options.getString('url')
     const input = song || url
 
-    let tracks = []
     // Track URL
     if (input.includes('spotify.com/track/')) {
       const trackId = input.split('spotify.com/track/')[1].split('?')[0]
       const trackData = await spotifyApi.getTrack(trackId)
-      tracks.push(trackData.body)
+      global.tracks.push(trackData.body)
     }
     // Playlist URL
     else if (input.includes('spotify.com/playlist/')) {
       const playlistId = input.split('spotify.com/playlist/')[1].split('?')[0]
       const playlistData = await spotifyApi.getPlaylist(playlistId)
       const playlistTracks = playlistData.body.tracks.items
-      tracks = playlistTracks.map((item) => item.track)
+      global.tracks.push(...playlistTracks.map((item) => item.track))
     }
     // Track w/ song name and artist
     else {
       const searchResult = await spotifyApi.searchTracks(input)
-      tracks.push(searchResult.body.tracks.items[0])
+      global.tracks.push(searchResult.body.tracks.items[0])
     }
 
     if (tracks.length === 0) {
@@ -54,9 +53,8 @@ module.exports = {
     }
 
     // Play all tracks added
-    let count = 1
     let connection
-    for (const track of tracks) {
+    for (const track of global.tracks) {
       // Get the track's meta
       const trackUrl = track.external_urls.spotify
       const trackName = track.name
@@ -70,11 +68,11 @@ module.exports = {
       })
       const ytTrackUrl = `https://music.youtube.com/watch?v=${ytSearchResult[0].id}`
 
-      // On first track
-      if (count === 1) {
-        // Defer interaction reply
-        await interaction.deferReply()
+      // Defer interaction reply
+      await interaction.deferReply()
 
+      // Check if the bot is in a voice channel
+      if (!connection) {
         // Join the voice channel
         const channel = interaction.member.voice.channel
         if (!channel) {
@@ -87,8 +85,6 @@ module.exports = {
           guildId: channel.guild.id,
           adapterCreator: channel.guild.voiceAdapterCreator,
         })
-
-        count++
       }
 
       // Play the track
@@ -108,7 +104,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setDescription(`Now playing [${track.name}](${trackUrl})`)
         .setColor('#FF0000')
-      await interaction.editReply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
 
       // Wait for the song to finish
       await new Promise((resolve) => player.on('idle', resolve))
