@@ -6,69 +6,21 @@ const {
   NoSubscriberBehavior,
 } = require('@discordjs/voice')
 
-const SpotifyWebApi = require('spotify-web-api-node')
 const YouTube = require('youtube-sr').default
 
 const play = require('play-dl')
 
 module.exports = {
   callback: async (_, interaction) => {
-    // Establish Spotify API connection
-    const spotifyApi = new SpotifyWebApi({
-      clientId: process.env.SPOTIFY_CLIENT_ID,
-      clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    })
-
-    // Retrieve an access token
-    const data = await spotifyApi.clientCredentialsGrant()
-    const accessToken = data.body['access_token']
-    spotifyApi.setAccessToken(accessToken)
-
-    // Get search input
-    const song = interaction.options.getString('song')
-    const url = interaction.options.getString('url')
-    const input = song || url
-
-    // Track URL
-    if (input.includes('spotify.com/track/')) {
-      const trackId = input.split('spotify.com/track/')[1].split('?')[0]
-      const trackData = await spotifyApi.getTrack(trackId)
-      global.tracks.push(trackData.body)
-    }
-    // Playlist URL
-    else if (input.includes('spotify.com/playlist/')) {
-      const playlistId = input.split('spotify.com/playlist/')[1].split('?')[0]
-      const playlistData = await spotifyApi.getPlaylist(playlistId)
-      const playlistTracks = playlistData.body.tracks.items
-      global.tracks.push(...playlistTracks.map((item) => item.track))
-    }
-    // Track w/ song name and artist
-    else {
-      const searchResult = await spotifyApi.searchTracks(input)
-      global.tracks.push(searchResult.body.tracks.items[0])
-    }
-
     if (global.tracks.length === 0) {
-      return interaction.reply('No tracks were found!')
-    }
-
-    // Check if a song is currently playing
-    if (global.connection) {
-      console.log('> [play] track(s) added')
       const embed = new EmbedBuilder()
-        .setDescription('Track(s) added to the queue')
+        .setDescription('Queue is empty')
         .setColor('#FF0000')
-      const embedMessage = await interaction.reply({
-        embeds: [embed],
-        fetchReply: true,
-      })
-      // Delete the embed message after 5 seconds
-      setTimeout(() => {
-        embedMessage.delete()
-      }, 5000)
-
-      return
+      return interaction.reply({ embeds: [embed] })
     }
+
+    // Head to the next track
+    /* global.player.stop() */
 
     // Defer interaction reply
     await interaction.deferReply()
@@ -131,21 +83,7 @@ module.exports = {
     }
   },
   data: {
-    name: 'play',
-    description: 'Play a song',
-    options: [
-      {
-        type: 3,
-        name: 'song',
-        description: 'Song name and artist',
-        required: false,
-      },
-      {
-        type: 3,
-        name: 'url',
-        description: 'Spotify URL',
-        required: false,
-      },
-    ],
+    name: 'skip',
+    description: 'Skip the current track',
   },
 }
