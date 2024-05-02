@@ -1,7 +1,4 @@
 const { EmbedBuilder } = require('discord.js')
-const { joinVoiceChannel, createAudioResource } = require('@discordjs/voice')
-
-const YouTube = require('youtube-sr').default
 
 module.exports = {
   callback: async (_, interaction) => {
