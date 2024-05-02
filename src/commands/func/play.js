@@ -48,14 +48,23 @@ module.exports = {
       global.tracks.push(searchResult.body.tracks.items[0])
     }
 
-    if (tracks.length === 0) {
+    if (global.tracks.length === 0) {
       return interaction.reply('No tracks were found!')
     }
 
+    // Check if a song is currently playing
+    if (global.connection) {
+      console.log('> [play] track(s) added')
+      return interaction.reply('Added to queue.')
+    }
+
+    // Defer interaction reply
+    await interaction.deferReply()
+
     // Play all tracks added
-    let connection
-    for (const track of global.tracks) {
-      // Get the track's meta
+    while (global.tracks.length > 0) {
+      // Get the next track
+      const track = global.tracks.shift()
       const trackUrl = track.external_urls.spotify
       const trackName = track.name
       const artistName = track.artists[0].name
@@ -68,11 +77,8 @@ module.exports = {
       })
       const ytTrackUrl = `https://music.youtube.com/watch?v=${ytSearchResult[0].id}`
 
-      // Defer interaction reply
-      await interaction.deferReply()
-
       // Check if the bot is in a voice channel
-      if (!connection) {
+      if (!global.connection) {
         // Join the voice channel
         const channel = interaction.member.voice.channel
         if (!channel) {
@@ -80,7 +86,7 @@ module.exports = {
             'You must be in a voice channel to play music!',
           )
         }
-        connection = joinVoiceChannel({
+        global.connection = joinVoiceChannel({
           channelId: channel.id,
           guildId: channel.guild.id,
           adapterCreator: channel.guild.voiceAdapterCreator,
@@ -98,13 +104,16 @@ module.exports = {
         },
       })
       player.play(resource)
-      connection.subscribe(player)
+      global.connection.subscribe(player)
+      console.log('> [play] track(s) added')
 
       // Interaction reply
       const embed = new EmbedBuilder()
-        .setDescription(`Now playing [${track.name}](${trackUrl})`)
+        .setDescription(
+          `Now playing [${trackName} - ${artistName}](${trackUrl})`,
+        )
         .setColor('#FF0000')
-      await interaction.reply({ embeds: [embed] })
+      await interaction.editReply({ embeds: [embed] })
 
       // Wait for the song to finish
       await new Promise((resolve) => player.on('idle', resolve))
