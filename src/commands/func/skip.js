@@ -27,6 +27,6 @@ module.exports = {
   },
   data: {
     name: 'skip',
-    description: 'Skip the current track',
+    description: 'Skip the current song',
   },
 }
