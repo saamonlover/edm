@@ -20,14 +20,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setDescription('Stopped playing and disconnected')
       .setColor('#FF0000')
-    const embedMessage = await interaction.reply({
-      embeds: [embed],
-      fetchReply: true,
-    })
-    // Delete the embed message after 5 seconds
-    setTimeout(() => {
-      embedMessage.delete()
-    }, 5000)
+    await interaction.reply({ embeds: [embed] })
   },
   data: {
     name: 'stop',

@@ -129,6 +129,26 @@ module.exports = {
       // Wait for the song to finish
       await new Promise((resolve) => global.player.on('idle', resolve))
     }
+
+    // When queue is empty
+    const embed = new EmbedBuilder()
+      .setDescription('Finished playing all songs in queue')
+      .setColor('#FF0000')
+    await interaction.editReply({ embeds: [embed] })
+
+    // Auto disconnect after 1 minute
+    setTimeout(async () => {
+      global.connection.destroy()
+      global.connection = null
+      global.tracks = []
+      global.player.stop()
+
+      // Interaction reply
+      const embed = new EmbedBuilder()
+        .setDescription('Disconnected due to inactivity')
+        .setColor('#FF0000')
+      await interaction.followUp({ embeds: [embed] })
+    }, 60000)
   },
   data: {
     name: 'play',
