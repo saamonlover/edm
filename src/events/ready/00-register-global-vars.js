@@ -19,4 +19,5 @@ module.exports = async (client) => {
   global.shuffleIcon = emojis.find((emoji) => emoji.name === 'EDMShuffleIcon')
   global.emptyIcon = emojis.find((emoji) => emoji.name === 'EDMEmptyIcon')
   global.skipIcon = emojis.find((emoji) => emoji.name === 'EDMSkipIcon')
+  global.queueIcon = emojis.find((emoji) => emoji.name === 'EDMQueueIcon')
 }

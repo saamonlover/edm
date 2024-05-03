@@ -28,13 +28,14 @@ module.exports = async (client, interaction) => {
 
   const embed = new EmbedBuilder()
     .setDescription(
-      global.tracks
-        .slice(start, end)
-        .map(
-          (track, index) =>
-            `${index + 1}. [${track.name} - ${track.artists[0].name}](${track.external_urls.spotify})`,
-        )
-        .join('\n'),
+      `${global.queueIcon}\u200B Current queue \n\n` +
+        global.tracks
+          .slice(start, end)
+          .map(
+            (track, index) =>
+              `${index + 1}. [${track.name} - ${track.artists[0].name}](${track.external_urls.spotify})`,
+          )
+          .join('\n'),
     )
     .setColor(process.env.SECONDARY_COLOR)
 
