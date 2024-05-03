@@ -5,8 +5,8 @@ module.exports = {
     // Check if the bot is connected to a voice channel
     if (!global.connection) {
       const embed = new EmbedBuilder()
-        .setDescription('Not connected to a voice channel')
-        .setColor('#FF0000')
+        .setDescription(`${global.errorIcon}  Not connected to a voice channel`)
+        .setColor(process.env.ERROR_COLOR)
       return interaction.reply({ embeds: [embed] })
     }
 
@@ -18,8 +18,10 @@ module.exports = {
 
     // Interaction reply
     const embed = new EmbedBuilder()
-      .setDescription('Stopped playing and disconnected')
-      .setColor('#FF0000')
+      .setDescription(
+        `${global.disconnectIcon}  Stopped playing and disconnected`,
+      )
+      .setColor(process.env.SECONDARY_COLOR)
     await interaction.reply({ embeds: [embed] })
   },
   data: {
