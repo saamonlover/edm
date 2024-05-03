@@ -56,9 +56,19 @@ module.exports = {
     // Playlist URL
     else if (input.includes('spotify.com/playlist/')) {
       const playlistId = input.split('spotify.com/playlist/')[1].split('?')[0]
-      const playlistData = await spotifyApi.getPlaylist(playlistId)
-      const playlistTracks = playlistData.body.tracks.items
-      global.tracks.push(...playlistTracks.map((item) => item.track))
+      let hasNextPage = true
+      let offset = 0
+
+      while (hasNextPage) {
+        const playlistData = await spotifyApi.getPlaylistTracks(playlistId, {
+          offset,
+        })
+        const playlistTracks = playlistData.body.items
+        global.tracks.push(...playlistTracks.map((item) => item.track))
+
+        offset += playlistTracks.length
+        hasNextPage = playlistData.body.next !== null
+      }
     }
     // Track w/ song name and artist
     else {
