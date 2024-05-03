@@ -4,8 +4,8 @@ module.exports = {
   callback: async (_, interaction) => {
     if (global.tracks.length === 0) {
       const embed = new EmbedBuilder()
-        .setDescription('Queue is empty')
-        .setColor('#FF0000')
+        .setDescription(`${global.emptyIcon}  Queue is empty`)
+        .setColor(process.env.SECONDARY_COLOR)
       return interaction.reply({ embeds: [embed] })
     }
 
@@ -14,8 +14,8 @@ module.exports = {
 
     // Interaction reply
     const embed = new EmbedBuilder()
-      .setDescription(`Current song skipped`)
-      .setColor('#FF0000')
+      .setDescription(`${global.skipIcon}  Current song skipped`)
+      .setColor(process.env.PRIMARY_COLOR)
     const embedMessage = await interaction.reply({
       embeds: [embed],
       fetchReply: true,
