@@ -29,8 +29,6 @@ module.exports = {
     const itemsPerPage = 10
     global.currentQueuePage = 1
 
-    console.log(global.tracks.length)
-
     const embed = new EmbedBuilder()
       .setDescription(
         global.tracks
