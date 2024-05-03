@@ -131,10 +131,17 @@ module.exports = {
     }
 
     // When queue is empty
-    const embed = new EmbedBuilder()
-      .setDescription('Finished playing all songs in queue')
-      .setColor('#FF0000')
-    await interaction.editReply({ embeds: [embed] })
+    if (global.connection) {
+      const embed = new EmbedBuilder()
+        .setDescription('Finished playing all songs in queue')
+        .setColor('#FF0000')
+      await interaction.editReply({ embeds: [embed] })
+    } else {
+      const embed = new EmbedBuilder()
+        .setDescription('Manually disconnected, queue emptied')
+        .setColor('#FF0000')
+      await interaction.editReply({ embeds: [embed] })
+    }
 
     // Auto disconnect after 1 minute
     setTimeout(async () => {
