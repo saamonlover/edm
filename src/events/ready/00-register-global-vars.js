@@ -15,4 +15,5 @@ module.exports = async (client) => {
     (emoji) => emoji.name === 'EDMDisconnectIcon',
   )
   global.addedIcon = emojis.find((emoji) => emoji.name === 'EDMAddedIcon')
+  global.errorIcon = emojis.find((emoji) => emoji.name === 'EDMErrorIcon')
 }

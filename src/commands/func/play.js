@@ -29,37 +29,51 @@ module.exports = {
     const url = interaction.options.getString('url')
     const input = song || url
 
-    // Track URL
-    if (input.includes('spotify.com/track/')) {
-      const trackId = input.split('spotify.com/track/')[1].split('?')[0]
-      const trackData = await spotifyApi.getTrack(trackId)
-      global.tracks.push(trackData.body)
-    }
-    // Playlist URL
-    else if (input.includes('spotify.com/playlist/')) {
-      const playlistId = input.split('spotify.com/playlist/')[1].split('?')[0]
-      let hasNextPage = true
-      let offset = 0
-
-      while (hasNextPage) {
-        const playlistData = await spotifyApi.getPlaylistTracks(playlistId, {
-          offset,
-        })
-        const playlistTracks = playlistData.body.items
-        global.tracks.push(...playlistTracks.map((item) => item.track))
-
-        offset += playlistTracks.length
-        hasNextPage = playlistData.body.next !== null
+    try {
+      // Track URL
+      if (input.includes('spotify.com/track/')) {
+        const trackId = input.split('spotify.com/track/')[1].split('?')[0]
+        const trackData = await spotifyApi.getTrack(trackId)
+        global.tracks.push(trackData.body)
       }
-    }
-    // Track w/ song name and artist
-    else {
-      const searchResult = await spotifyApi.searchTracks(input)
-      global.tracks.push(searchResult.body.tracks.items[0])
+      // Playlist URL
+      else if (input.includes('spotify.com/playlist/')) {
+        const playlistId = input.split('spotify.com/playlist/')[1].split('?')[0]
+        let hasNextPage = true
+        let offset = 0
+
+        while (hasNextPage) {
+          const playlistData = await spotifyApi.getPlaylistTracks(playlistId, {
+            offset,
+          })
+          const playlistTracks = playlistData.body.items
+          global.tracks.push(...playlistTracks.map((item) => item.track))
+
+          offset += playlistTracks.length
+          hasNextPage = playlistData.body.next !== null
+        }
+      }
+      // Track w/ song name and artist
+      else {
+        const searchResult = await spotifyApi.searchTracks(input)
+        global.tracks.push(searchResult.body.tracks.items[0])
+      }
+    } catch (error) {
+      console.log('> [play] error:', error.message)
+      const embed = new EmbedBuilder()
+        .setDescription(`${global.errorIcon}  Error adding song`)
+        .setColor(process.env.ERROR_COLOR)
+      return interaction.reply({ embeds: [embed] })
     }
 
+    // Not sure if still needed
     if (global.tracks.length === 0) {
-      return interaction.reply('No tracks were found!')
+      const embed = new EmbedBuilder()
+        .setDescription(
+          `${global.errorIcon}  Please ensure a song or url is requested`,
+        )
+        .setColor(process.env.ERROR_COLOR)
+      return interaction.reply({ embeds: [embed] })
     }
 
     // Check if a song is currently playing
@@ -104,9 +118,12 @@ module.exports = {
         // Join the voice channel
         const channel = interaction.member.voice.channel
         if (!channel) {
-          return interaction.editReply(
-            'You must be in a voice channel to play music!',
-          )
+          const embed = new EmbedBuilder()
+            .setDescription(
+              `${global.errorIcon}  Please join a voice channel first`,
+            )
+            .setColor(process.env.ERROR_COLOR)
+          return interaction.editReply({ embeds: [embed] })
         }
         global.connection = joinVoiceChannel({
           channelId: channel.id,
