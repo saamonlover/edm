@@ -36,17 +36,17 @@ module.exports = async (client, interaction) => {
         )
         .join('\n'),
     )
-    .setColor('#FF0000')
+    .setColor(process.env.SECONDARY_COLOR)
 
   const nextPage = new ButtonBuilder()
     .setCustomId('next')
     .setLabel('>')
-    .setStyle(ButtonStyle.Primary)
+    .setStyle(ButtonStyle.Secondary)
 
   const previousPage = new ButtonBuilder()
     .setCustomId('previous')
     .setLabel('<')
-    .setStyle(ButtonStyle.Primary)
+    .setStyle(ButtonStyle.Secondary)
 
   const row = new ActionRowBuilder().addComponents(previousPage, nextPage)
 

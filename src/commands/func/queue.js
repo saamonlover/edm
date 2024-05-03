@@ -9,20 +9,20 @@ module.exports = {
   callback: async (_, interaction) => {
     if (global.tracks.length === 0) {
       const embed = new EmbedBuilder()
-        .setDescription('Queue is empty')
-        .setColor('#FF0000')
+        .setDescription(`${global.emptyIcon}  Queue is empty`)
+        .setColor(process.env.SECONDARY_COLOR)
       return interaction.reply({ embeds: [embed] })
     }
 
     const nextPage = new ButtonBuilder()
       .setCustomId('next')
       .setLabel('>')
-      .setStyle(ButtonStyle.Primary)
+      .setStyle(ButtonStyle.Secondary)
 
     const previousPage = new ButtonBuilder()
       .setCustomId('previous')
       .setLabel('<')
-      .setStyle(ButtonStyle.Primary)
+      .setStyle(ButtonStyle.Secondary)
 
     const row = new ActionRowBuilder().addComponents(previousPage, nextPage)
 
@@ -39,7 +39,7 @@ module.exports = {
           )
           .join('\n'),
       )
-      .setColor('#FF0000')
+      .setColor(process.env.SECONDARY_COLOR)
     await interaction.reply({ embeds: [embed], components: [row] })
   },
   data: {
