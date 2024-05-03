@@ -13,8 +13,8 @@ module.exports = {
 
     // Interaction reply
     const embed = new EmbedBuilder()
-      .setDescription(`Queue shuffled`)
-      .setColor('#FF0000')
+      .setDescription(`${global.shuffleIcon}  Queue shuffled`)
+      .setColor(process.env.SECONDARY_COLOR)
     const embedMessage = await interaction.reply({
       embeds: [embed],
       fetchReply: true,
