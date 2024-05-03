@@ -1,6 +1,18 @@
-module.exports = async () => {
+module.exports = async (client) => {
   global.connection
   global.player
   global.tracks = []
   global.currentQueuePage
+
+  // Get guild
+  const guild = client.guilds.cache.get(process.env.GUILD_ID)
+
+  // Emojis
+  const emojis = guild.emojis.cache
+  global.playingIcon = emojis.find((emoji) => emoji.name === 'EDMPlayingIcon')
+  global.stoppedIcon = emojis.find((emoji) => emoji.name === 'EDMStoppedIcon')
+  global.disconnectIcon = emojis.find(
+    (emoji) => emoji.name === 'EDMDisconnectIcon',
+  )
+  global.addedIcon = emojis.find((emoji) => emoji.name === 'EDMAddedIcon')
 }

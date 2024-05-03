@@ -17,8 +17,8 @@ module.exports = {
     if (global.connection) {
       console.log('> [play] track(s) added')
       const embed = new EmbedBuilder()
-        .setDescription('Track(s) added to the queue')
-        .setColor('#FF0000')
+        .setDescription(`${global.addedIcon}  Track(s) added to the queue`)
+        .setColor(process.env.SECONDARY_COLOR)
       const embedMessage = await interaction.reply({
         embeds: [embed],
         fetchReply: true,
@@ -131,9 +131,9 @@ module.exports = {
       // Interaction reply
       const embed = new EmbedBuilder()
         .setDescription(
-          `Now playing **[${trackName} by ${artistName}](${trackUrl})**`,
+          `${global.playingIcon}  Now playing **[${trackName} by ${artistName}](${trackUrl})**`,
         )
-        .setColor('#FF0000')
+        .setColor(process.env.PRIMARY_COLOR)
       await interaction.editReply({ embeds: [embed] })
 
       // Wait for the song to finish
@@ -143,13 +143,17 @@ module.exports = {
     // When queue is empty
     if (global.connection) {
       const embed = new EmbedBuilder()
-        .setDescription('Finished playing all songs in queue')
-        .setColor('#FF0000')
+        .setDescription(
+          `${global.stoppedIcon}  Finished playing all songs in queue`,
+        )
+        .setColor(process.env.PRIMARY_COLOR)
       await interaction.editReply({ embeds: [embed] })
     } else {
       const embed = new EmbedBuilder()
-        .setDescription('Manually disconnected, queue emptied')
-        .setColor('#FF0000')
+        .setDescription(
+          `${global.disconnectIcon}  Manually disconnected, queue emptied`,
+        )
+        .setColor(process.env.SECONDARY_COLOR)
       await interaction.editReply({ embeds: [embed] })
     }
 
@@ -163,8 +167,10 @@ module.exports = {
 
         // Interaction reply
         const embed = new EmbedBuilder()
-          .setDescription('Disconnected due to inactivity')
-          .setColor('#FF0000')
+          .setDescription(
+            `${global.disconnectIcon}  Disconnected due to inactivity`,
+          )
+          .setColor(process.env.SECONDARY_COLOR)
         await interaction.followUp({ embeds: [embed] })
       }
     }, 60000)
