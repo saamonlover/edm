@@ -138,16 +138,18 @@ module.exports = {
 
     // Auto disconnect after 1 minute
     setTimeout(async () => {
-      global.connection.destroy()
-      global.connection = null
-      global.tracks = []
-      global.player.stop()
+      if (global.connection) {
+        global.connection.destroy()
+        global.connection = null
+        global.tracks = []
+        global.player.stop()
 
-      // Interaction reply
-      const embed = new EmbedBuilder()
-        .setDescription('Disconnected due to inactivity')
-        .setColor('#FF0000')
-      await interaction.followUp({ embeds: [embed] })
+        // Interaction reply
+        const embed = new EmbedBuilder()
+          .setDescription('Disconnected due to inactivity')
+          .setColor('#FF0000')
+        await interaction.followUp({ embeds: [embed] })
+      }
     }, 60000)
   },
   data: {
