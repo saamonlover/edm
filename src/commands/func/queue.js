@@ -24,7 +24,16 @@ module.exports = {
       .setLabel('<')
       .setStyle(ButtonStyle.Secondary)
 
-    const row = new ActionRowBuilder().addComponents(previousPage, nextPage)
+    const refreshPage = new ButtonBuilder()
+      .setCustomId('refresh')
+      .setLabel('↻ / <<')
+      .setStyle(ButtonStyle.Secondary)
+
+    const row = new ActionRowBuilder().addComponents(
+      previousPage,
+      nextPage,
+      refreshPage,
+    )
 
     const itemsPerPage = 10
     global.currentQueuePage = 1

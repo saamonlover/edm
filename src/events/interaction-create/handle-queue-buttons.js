@@ -21,6 +21,11 @@ module.exports = async (client, interaction) => {
     newPage = Math.min(global.currentQueuePage + 1, pages)
   }
 
+  // When refresh button is clicked, set the page to 1
+  if (interaction.customId === 'refresh') {
+    newPage = 1
+  }
+
   const start = (newPage - 1) * itemsPerPage
   const end = start + itemsPerPage
 
@@ -49,7 +54,16 @@ module.exports = async (client, interaction) => {
     .setLabel('<')
     .setStyle(ButtonStyle.Secondary)
 
-  const row = new ActionRowBuilder().addComponents(previousPage, nextPage)
+  const refreshPage = new ButtonBuilder()
+    .setCustomId('refresh')
+    .setLabel('↻ / <<')
+    .setStyle(ButtonStyle.Secondary)
+
+  const row = new ActionRowBuilder().addComponents(
+    previousPage,
+    nextPage,
+    refreshPage,
+  )
 
   await interaction.update({ embeds: [embed], components: [row] })
 }
