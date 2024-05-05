@@ -176,7 +176,7 @@ module.exports = {
 
     // Auto disconnect after 1 minute
     setTimeout(async () => {
-      if (global.connection) {
+      if (global.connection && global.tracks.length === 0) {
         global.connection.destroy()
         global.connection = null
         global.tracks = []
