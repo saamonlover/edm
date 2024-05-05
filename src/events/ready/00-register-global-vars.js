@@ -21,4 +21,5 @@ module.exports = async (client) => {
   global.skipIcon = emojis.find((emoji) => emoji.name === 'EDMSkipIcon')
   global.queueIcon = emojis.find((emoji) => emoji.name === 'EDMQueueIcon')
   global.jumptoIcon = emojis.find((emoji) => emoji.name === 'EDMJumptoIcon')
+  global.removeIcon = emojis.find((emoji) => emoji.name === 'EDMRemoveIcon')
 }
