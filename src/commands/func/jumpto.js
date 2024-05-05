@@ -7,7 +7,15 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setDescription(`${global.errorIcon}  Invalid posiiton number`)
         .setColor(process.env.ERROR_COLOR)
-      return interaction.reply({ embeds: [embed] })
+      const embedError = await interaction.reply({
+        embeds: [embed],
+        fetchReply: true,
+      })
+      // Delete the embed message after 5 seconds
+      setTimeout(() => {
+        embedError.delete()
+      }, 2000)
+      return
     }
 
     // Skip the queue to the selected index

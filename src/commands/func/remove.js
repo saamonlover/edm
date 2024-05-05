@@ -7,7 +7,15 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setDescription(`${global.errorIcon}  Invalid position number`)
         .setColor(process.env.ERROR_COLOR)
-      return interaction.reply({ embeds: [embed] })
+      const embedError = await interaction.reply({
+        embeds: [embed],
+        fetchReply: true,
+      })
+      // Delete the embed message after 5 seconds
+      setTimeout(() => {
+        embedError.delete()
+      }, 2000)
+      return
     }
 
     const removedTrack = global.tracks[index]
@@ -18,7 +26,14 @@ module.exports = {
         `${global.removeIcon}  Removed song at [${index + 1}] **[${removedTrack.name} by ${removedTrack.artists[0].name}](${removedTrack.external_urls.spotify})**`,
       )
       .setColor(process.env.SECONDARY_COLOR)
-    await interaction.reply({ embeds: [embed] })
+    const embedMessage = await interaction.reply({
+      embeds: [embed],
+      fetchReply: true,
+    })
+    // Delete the embed message after 5 seconds
+    setTimeout(() => {
+      embedMessage.delete()
+    }, 5000)
   },
   data: {
     name: 'remove',
