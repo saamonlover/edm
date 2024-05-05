@@ -36,6 +36,13 @@ module.exports = {
         const trackData = await spotifyApi.getTrack(trackId)
         global.tracks.push(trackData.body)
       }
+      // Album URL
+      else if (input.includes('spotify.com/album/')) {
+        const albumId = input.split('spotify.com/album/')[1].split('?')[0]
+        const albumData = await spotifyApi.getAlbum(albumId)
+        const albumTracks = albumData.body.tracks.items
+        global.tracks.push(...albumTracks)
+      }
       // Playlist URL
       else if (input.includes('spotify.com/playlist/')) {
         const playlistId = input.split('spotify.com/playlist/')[1].split('?')[0]
