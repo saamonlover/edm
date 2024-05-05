@@ -45,7 +45,7 @@ module.exports = {
             .slice(0, itemsPerPage)
             .map(
               (track, index) =>
-                `${index + 1}. [${track.name} by ${track.artists.map((artist) => artist.name).join(', ')}](${track.external_urls.spotify})`,
+                `${index + 1}. [${track.name}  by ${track.artists.map((artist) => artist.name).join(', ')}](${track.external_urls.spotify})`,
             )
             .join('\n'),
       )
