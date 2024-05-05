@@ -23,7 +23,7 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setDescription(
-        `${global.removeIcon}  Removed song at [${index + 1}] **[${removedTrack.name} by ${removedTrack.artists[0].name}](${removedTrack.external_urls.spotify})**`,
+        `${global.removeIcon}  Removed song at [${index + 1}] **[${removedTrack.name} by ${removedTrack.artists.map((artist) => artist.name).join(', ')}](${removedTrack.external_urls.spotify})**`,
       )
       .setColor(process.env.SECONDARY_COLOR)
     const embedMessage = await interaction.reply({

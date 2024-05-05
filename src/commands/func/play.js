@@ -103,10 +103,11 @@ module.exports = {
       const track = global.tracks.shift()
       const trackUrl = track.external_urls.spotify
       const trackName = track.name
-      const artistName = track.artists[0].name
+      // const artistName = track.artists[0].name
+      const artistNames = track.artists.map((artist) => artist.name).join(', ')
 
       // Search on YouTube Music
-      const searchQuery = `${trackName} ${artistName} audio`
+      const searchQuery = `${trackName} ${artistNames} audio`
       const ytSearchResult = await YouTube.search(searchQuery, {
         limit: 1,
         safeSearch: true,
@@ -148,7 +149,7 @@ module.exports = {
       // Interaction reply
       const embed = new EmbedBuilder()
         .setDescription(
-          `${global.playingIcon}  Now playing **[${trackName} by ${artistName}](${trackUrl})**`,
+          `${global.playingIcon}  Now playing **[${trackName} by ${artistNames}](${trackUrl})**`,
         )
         .setColor(process.env.PRIMARY_COLOR)
       await interaction.editReply({ embeds: [embed] })

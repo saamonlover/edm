@@ -26,7 +26,7 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setDescription(
-        `${global.jumptoIcon} Jumped to [${index + 1}] **[${selectedTrack.name} by ${selectedTrack.artists[0].name}](${selectedTrack.external_urls.spotify})**`,
+        `${global.jumptoIcon} Jumped to [${index + 1}] **[${selectedTrack.name} by ${selectedTrack.artists.map((artist) => artist.name).join(', ')}](${selectedTrack.external_urls.spotify})**`,
       )
       .setColor(process.env.PRIMARY_COLOR)
     const embedMessage = await interaction.reply({

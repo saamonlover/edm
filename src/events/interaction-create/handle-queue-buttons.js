@@ -38,7 +38,7 @@ module.exports = async (client, interaction) => {
           .slice(start, end)
           .map(
             (track, index) =>
-              `${index + 1 + start}. [${track.name} - ${track.artists[0].name}](${track.external_urls.spotify})`,
+              `${index + 1 + start}. [${track.name} by ${track.artists.map((artist) => artist.name).join(', ')}](${track.external_urls.spotify})`,
           )
           .join('\n'),
     )
