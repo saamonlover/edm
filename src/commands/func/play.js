@@ -112,11 +112,9 @@ module.exports = {
       const trackName = track.name
       // const artistName = track.artists[0].name
       const artistNames = track.artists.map((artist) => artist.name).join(', ')
-      const albumName = track.album.name
-      const releaseYear = new Date(track.album.release_date).getFullYear()
 
       // Search on YouTube Music
-      const searchQuery = `"${trackName}" "${artistNames}" ${albumName} ${releaseYear} audio`
+      const searchQuery = `"${trackName}" "${artistNames}" audio`
       const ytSearchResult = await YouTube.search(searchQuery, {
         limit: 1,
         safeSearch: true,
