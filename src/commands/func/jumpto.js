@@ -6,7 +6,7 @@ module.exports = {
     if (index < 0 || index >= global.tracks.length) {
       const embed = new EmbedBuilder()
         .setDescription(`${global.errorIcon}  Invalid posiiton number`)
-        .setColor(process.env.SECONDARY_COLOR)
+        .setColor(process.env.ERROR_COLOR)
       return interaction.reply({ embeds: [embed] })
     }
 
@@ -18,7 +18,7 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setDescription(
-        `${global.jumptoIcon} Jumped to [${index + 1}] **[${selectedTrack.name} - ${selectedTrack.artists[0].name}](${selectedTrack.external_urls.spotify})**`,
+        `${global.jumptoIcon} Jumped to [${index + 1}] **[${selectedTrack.name} by ${selectedTrack.artists[0].name}](${selectedTrack.external_urls.spotify})**`,
       )
       .setColor(process.env.PRIMARY_COLOR)
     const embedMessage = await interaction.reply({
