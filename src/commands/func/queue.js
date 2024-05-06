@@ -37,18 +37,16 @@ module.exports = {
 
     const itemsPerPage = 10
     global.currentQueuePage = 1
+    const queueList = global.tracks
+      .slice(0, itemsPerPage)
+      .map(
+        (track, index) =>
+          `${index + 1}. [${track.name}  by ${track.artists.map((artist) => artist.name).join(', ')}](${track.external_urls.spotify})`,
+      )
+      .join('\n')
 
     const embed = new EmbedBuilder()
-      .setDescription(
-        `${global.queueIcon}\u200B Current queue \n\n` +
-          global.tracks
-            .slice(0, itemsPerPage)
-            .map(
-              (track, index) =>
-                `${index + 1}. [${track.name}  by ${track.artists.map((artist) => artist.name).join(', ')}](${track.external_urls.spotify})`,
-            )
-            .join('\n'),
-      )
+      .setDescription(`${global.queueIcon}\u200B Current queue\n\n` + queueList)
       .setColor(process.env.SECONDARY_COLOR)
     await interaction.reply({ embeds: [embed], components: [row] })
   },

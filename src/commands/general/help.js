@@ -11,8 +11,7 @@ module.exports = {
       .join('\n')
 
     const embed = new EmbedBuilder()
-      .setTitle('Available commands\n\u200B')
-      .setDescription(commandList)
+      .setDescription(`${global.helpIcon}\u200B Available commands\n\n` + commandList)
       .setColor(process.env.PRIMARY_COLOR)
 
     await interaction.reply({ embeds: [embed] })
