@@ -99,13 +99,16 @@ module.exports = {
       return
     }
 
+    // Deferring the interaction
+    await interaction.deferReply()
+
     global.player = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Play,
       },
     })
 
-    const isFirstIteraction = true
+    let isFirstIteraction = true
 
     // Play all tracks added
     while (global.tracks.length > 0) {
@@ -159,7 +162,7 @@ module.exports = {
         .setColor(process.env.PRIMARY_COLOR)
 
       if (isFirstIteraction) {
-        await interaction.reply({ embeds: [embed] })
+        await interaction.editReply({ embeds: [embed] })
         isFirstIteraction = false
       } else {
         await interaction.channel.send({ embeds: [embed] })
