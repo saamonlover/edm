@@ -1,5 +1,7 @@
 # EDM
+
 ![header](./src/assets/header.png)
+</br>
 A discord muisic bot that supports searching Spotify tracks, playlists, and albums and playing the search results using YouTube Music.
 
 ## Teckstack
