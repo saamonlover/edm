@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "preinstall": "npm i -g pm2",
+    "start": "pm2-runtime start src/index.js -i 1"
+  },
   "dependencies": {
     "@discordjs/voice": "^0.16.1",
     "discord.js": "^14.14.1",

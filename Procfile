@@ -1,0 +1,1 @@
+worker: pm2-runtime start src/index.js -i 1
