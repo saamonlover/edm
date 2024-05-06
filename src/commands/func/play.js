@@ -172,20 +172,19 @@ module.exports = {
         .setColor(process.env.PRIMARY_COLOR)
       await interaction.channel.send({ embeds: [embed] })
     } else {
+      global.player.stop()
       const embed = new EmbedBuilder()
         .setDescription(
           `${global.disconnectIcon}  Manually disconnected, queue emptied`,
         )
         .setColor(process.env.SECONDARY_COLOR)
-      await interaction.channel.send({ embeds: [embed] })
+      return interaction.channel.send({ embeds: [embed] })
     }
 
     // Auto disconnect after 1 minute
     setTimeout(async () => {
       if (global.connection && global.tracks.length === 0) {
         global.connection.destroy()
-        global.connection = null
-        global.tracks = []
         global.player.stop()
 
         // Interaction reply
