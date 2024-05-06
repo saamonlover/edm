@@ -25,9 +25,7 @@ module.exports = {
     spotifyApi.setAccessToken(accessToken)
 
     // Get search input
-    const song = interaction.options.getString('song')
-    const url = interaction.options.getString('url')
-    const input = song || url
+    const input = interaction.options.getString('input')
 
     try {
       // Track URL
@@ -101,8 +99,13 @@ module.exports = {
       return
     }
 
-    // Defer interaction reply
-    await interaction.deferReply()
+    global.player = createAudioPlayer({
+      behaviors: {
+        noSubscriber: NoSubscriberBehavior.Play,
+      },
+    })
+
+    const isFirstIteraction = true
 
     // Play all tracks added
     while (global.tracks.length > 0) {
@@ -145,21 +148,22 @@ module.exports = {
       const resource = createAudioResource(stream.stream, {
         inputType: stream.type,
       })
-      global.player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Play,
-        },
-      })
       global.player.play(resource)
       global.connection.subscribe(global.player)
 
       // Interaction reply
       const embed = new EmbedBuilder()
         .setDescription(
-          `${global.playingIcon}  Now playing **[${trackName} by ${artistNames}](${trackUrl})**`,
+          `${global.playingIcon}  Started playing **[${trackName} by ${artistNames}](${trackUrl})**`,
         )
         .setColor(process.env.PRIMARY_COLOR)
-      await interaction.editReply({ embeds: [embed] })
+
+      if (isFirstIteraction) {
+        await interaction.reply({ embeds: [embed] })
+        isFirstIteraction = false
+      } else {
+        await interaction.channel.send({ embeds: [embed] })
+      }
 
       // Wait for the song to finish
       await new Promise((resolve) => global.player.on('idle', resolve))
@@ -172,14 +176,14 @@ module.exports = {
           `${global.stoppedIcon}  Finished playing all songs in queue`,
         )
         .setColor(process.env.PRIMARY_COLOR)
-      await interaction.editReply({ embeds: [embed] })
+      await interaction.channel.send({ embeds: [embed] })
     } else {
       const embed = new EmbedBuilder()
         .setDescription(
           `${global.disconnectIcon}  Manually disconnected, queue emptied`,
         )
         .setColor(process.env.SECONDARY_COLOR)
-      await interaction.editReply({ embeds: [embed] })
+      await interaction.channel.send({ embeds: [embed] })
     }
 
     // Auto disconnect after 1 minute
@@ -196,7 +200,7 @@ module.exports = {
             `${global.disconnectIcon}  Disconnected due to inactivity`,
           )
           .setColor(process.env.SECONDARY_COLOR)
-        await interaction.followUp({ embeds: [embed] })
+        await interaction.channel.send({ embeds: [embed] })
       }
     }, 60000)
   },
@@ -206,15 +210,9 @@ module.exports = {
     options: [
       {
         type: 3,
-        name: 'song',
-        description: 'Song name and artist',
-        required: false,
-      },
-      {
-        type: 3,
-        name: 'url',
-        description: 'Spotify URL',
-        required: false,
+        name: 'input',
+        description: 'Song name and artist / Spotify URL',
+        required: true,
       },
     ],
   },
