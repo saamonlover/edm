@@ -184,8 +184,6 @@ module.exports = {
     setTimeout(async () => {
       if (global.connection && global.tracks.length === 0) {
         global.connection.destroy()
-        global.player.stop()
-
         // Interaction reply
         const embed = new EmbedBuilder()
           .setDescription(
