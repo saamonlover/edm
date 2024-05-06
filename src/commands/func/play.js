@@ -172,7 +172,6 @@ module.exports = {
         .setColor(process.env.PRIMARY_COLOR)
       await interaction.channel.send({ embeds: [embed] })
     } else {
-      global.player.stop()
       const embed = new EmbedBuilder()
         .setDescription(
           `${global.disconnectIcon}  Manually disconnected, queue emptied`,

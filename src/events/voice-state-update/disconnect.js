@@ -1,5 +1,3 @@
-const { EmbedBuilder } = require('discord.js')
-
 module.exports = async (client, oldState, newState) => {
   // Check if the bot was disconnected from the voice channel
   if (
