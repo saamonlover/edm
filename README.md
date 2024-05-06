@@ -1,10 +1,11 @@
+![header](./src/assets/header.png)
+
 # EDM
 
-![header](./src/assets/header.png)
-</br>
 A discord muisic bot that supports searching Spotify tracks, playlists, and albums and playing the search results using YouTube Music.
 
 ### Status
+
 - Help me to get it verified via [Direct Invite](https://discord.com/oauth2/authorize?client_id=1233204961337413704&permissions=2150909952&scope=applications.commands+bot) to your server!
 - It is also under review on Top.gg
 
