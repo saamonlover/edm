@@ -87,16 +87,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setDescription(`${global.addedIcon}  Track(s) added to the queue`)
         .setColor(process.env.SECONDARY_COLOR)
-      const embedMessage = await interaction.reply({
-        embeds: [embed],
-        fetchReply: true,
-      })
-      // Delete the embed message after 5 seconds
-      setTimeout(() => {
-        embedMessage.delete()
-      }, 5000)
-
-      return
+      return interaction.reply({ embeds: [embed] })
     }
 
     // Deferring the interaction
