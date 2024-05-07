@@ -5,6 +5,13 @@ module.exports = {
     const guildId = interaction.guild.id
     const local = require('../../events/ready/00-register-local-vars')(guildId)
 
+    if (!local.tracks.length) {
+      const embed = new EmbedBuilder()
+        .setDescription(`${global.errorIcon}  Add a song to the queue before shuffling`)
+        .setColor(process.env.ERROR_COLOR)
+      return await interaction.reply({ embeds: [embed] })
+    }
+
     // Remove the next playing track from the queue
     const currentTrack = local.tracks.shift()
 
