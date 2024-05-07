@@ -164,7 +164,7 @@ module.exports = {
       }
 
       // Wait for the song to finish
-      await new Promise((resolve) => local.player.on('idle', resolve))
+      await new Promise((resolve) => local.player.once('idle', resolve))
     }
 
     // When queue is empty
