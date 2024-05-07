@@ -82,7 +82,7 @@ module.exports = {
     }
 
     // Check if a song is currently playing
-    if (global.connection) {
+    if (global.connection && global.player.state.status === 'playing') {
       console.log('> [play] track(s) added')
       const embed = new EmbedBuilder()
         .setDescription(`${global.addedIcon}  Track(s) added to the queue`)
@@ -182,7 +182,7 @@ module.exports = {
 
     // Auto disconnect after 1 minute
     setTimeout(async () => {
-      if (global.connection && global.tracks.length === 0) {
+      if (global.connection && global.player.state.status === 'idle') {
         global.connection.destroy()
         // Interaction reply
         const embed = new EmbedBuilder()
