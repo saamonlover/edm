@@ -15,7 +15,9 @@ module.exports = async (client, oldState, newState) => {
     // Need to clear the queue as well
     local.connection = null
     local.tracks = []
-    local.player.stop()
+    if (local.player) {
+      local.player.stop()
+    }
 
     console.log('> [voice-state-update] dsisconnected')
 
