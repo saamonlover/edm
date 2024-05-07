@@ -1,6 +1,9 @@
 const { EmbedBuilder } = require('discord.js')
 
 module.exports = async (client, oldState, newState) => {
+  const guildId = oldState.guild.id
+  const local = require('../../events/ready/00-register-local-vars')(guildId)
+
   // Check if the bot was disconnected from the voice channel
   if (
     oldState.member.id === client.user.id &&
@@ -10,14 +13,14 @@ module.exports = async (client, oldState, newState) => {
     // Set global.connection back to null and stop the player
     // Since player stop operation actually sklips to the next item in queue
     // Need to clear the queue as well
-    global.connection = null
-    global.tracks = []
-    global.player.stop()
+    local.connection = null
+    local.tracks = []
+    local.player.stop()
 
     console.log('> [voice-state-update] dsisconnected')
 
     const embed = new EmbedBuilder()
-    if (global.player.state.status === 'idle') {
+    if (local.player.state.status === 'idle') {
       embed
         .setDescription(
           `${global.disconnectIcon}  Disconnected due to inactivity`,
@@ -26,12 +29,12 @@ module.exports = async (client, oldState, newState) => {
     } else {
       embed
         .setDescription(
-          `${global.disconnectIcon}  Manually disconnected, queue emptied`,
+          `${global.disconnectIcon}  Queue emptied due to disconnection`,
         )
         .setColor(process.env.SECONDARY_COLOR)
     }
-    if (global.interaction) {
-      return global.interaction.channel.send({ embeds: [embed] })
+    if (local.inter) {
+      return local.inter.channel.send({ embeds: [embed] })
     }
   }
 }

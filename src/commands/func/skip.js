@@ -2,7 +2,10 @@ const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
   callback: async (_, interaction) => {
-    if (global.tracks.length === 0) {
+    const guildId = interaction.guild.id
+    const local = require('../../events/ready/00-register-local-vars')(guildId)
+
+    if (local.tracks.length === 0) {
       const embed = new EmbedBuilder()
         .setDescription(`${global.emptyIcon}  Queue is empty`)
         .setColor(process.env.SECONDARY_COLOR)
@@ -10,7 +13,7 @@ module.exports = {
     }
 
     // Head to the next track
-    global.player.stop()
+    local.player.stop()
 
     // Interaction reply
     const embed = new EmbedBuilder()

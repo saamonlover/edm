@@ -2,8 +2,11 @@ const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
   callback: async (_, interaction) => {
+    const guildId = interaction.guild.id
+    const local = require('../../events/ready/00-register-local-vars')(guildId)
+
     const index = interaction.options.getInteger('position') - 1
-    if (index < 0 || index >= global.tracks.length) {
+    if (index < 0 || index >= local.tracks.length) {
       const embed = new EmbedBuilder()
         .setDescription(`${global.errorIcon}  Invalid posiiton number`)
         .setColor(process.env.ERROR_COLOR)
@@ -11,10 +14,10 @@ module.exports = {
     }
 
     // Skip the queue to the selected index
-    const selectedTrack = global.tracks.splice(index, 1)[0]
-    global.tracks = global.tracks.slice(index) // Remove the skipped songs
-    global.tracks.unshift(selectedTrack) // Add the selected song to the beginning
-    global.player.stop() // Stop the current song and play the next
+    const selectedTrack = local.tracks.splice(index, 1)[0]
+    local.tracks = local.tracks.slice(index) // Remove the skipped songs
+    local.tracks.unshift(selectedTrack) // Add the selected song to the beginning
+    local.player.stop() // Stop the current song and play the next
 
     const embed = new EmbedBuilder()
       .setDescription(

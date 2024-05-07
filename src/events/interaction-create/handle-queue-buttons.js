@@ -5,20 +5,23 @@ const {
   ActionRowBuilder,
 } = require('discord.js')
 
-module.exports = async (client, interaction) => {
+module.exports = async (_, interaction) => {
+  const guildId = interaction.guild.id
+  const local = require('../../events/ready/00-register-local-vars')(guildId)
+
   if (!interaction.isButton()) return
 
   const itemsPerPage = 10
-  const pages = Math.ceil(global.tracks.length / itemsPerPage)
+  const pages = Math.ceil(local.tracks.length / itemsPerPage)
 
   let newPage
 
   if (interaction.customId === 'previous') {
     // If the 'previous' button was clicked, decrement the page number
-    newPage = Math.max(global.currentQueuePage - 1, 1)
+    newPage = Math.max(local.currentQueuePage - 1, 1)
   } else if (interaction.customId === 'next') {
     // If the 'next' button was clicked, increment the page number
-    newPage = Math.min(global.currentQueuePage + 1, pages)
+    newPage = Math.min(local.currentQueuePage + 1, pages)
   }
 
   // When refresh button is clicked, set the page to 1
@@ -29,12 +32,12 @@ module.exports = async (client, interaction) => {
   const start = (newPage - 1) * itemsPerPage
   const end = start + itemsPerPage
 
-  global.currentQueuePage = newPage
+  local.currentQueuePage = newPage
 
   const embed = new EmbedBuilder()
     .setDescription(
       `${global.queueIcon}\u200B Current queue \n\n` +
-        global.tracks
+        local.tracks
           .slice(start, end)
           .map(
             (track, index) =>

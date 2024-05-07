@@ -2,8 +2,11 @@ const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
   callback: async (_, interaction) => {
+    const guildId = interaction.guild.id
+    const local = require('../../events/ready/00-register-local-vars')(guildId)
+
     // Check if the bot is connected to a voice channel
-    if (!global.connection) {
+    if (!local.connection) {
       const embed = new EmbedBuilder()
         .setDescription(`${global.errorIcon}  Not connected to a voice channel`)
         .setColor(process.env.ERROR_COLOR)
@@ -11,10 +14,7 @@ module.exports = {
     }
 
     // Disconnect the bot from the voice channel
-    global.connection.destroy()
-    global.connection = null
-    global.tracks = []
-    global.player.stop()
+    local.connection.destroy()
 
     // Interaction reply
     const embed = new EmbedBuilder()

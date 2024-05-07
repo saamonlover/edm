@@ -1,11 +1,4 @@
 module.exports = async (client) => {
-  global.interaction
-
-  global.connection
-  global.player
-  global.tracks = []
-  global.currentQueuePage
-
   // Get guild
   const guild = client.guilds.cache.get(process.env.GUILD_ID)
 

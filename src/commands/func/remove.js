@@ -2,16 +2,19 @@ const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
   callback: async (_, interaction) => {
+    const guildId = interaction.guild.id
+    const local = require('../../events/ready/00-register-local-vars')(guildId)
+
     const index = interaction.options.getInteger('position') - 1
-    if (index < 0 || index >= global.tracks.length) {
+    if (index < 0 || index >= local.tracks.length) {
       const embed = new EmbedBuilder()
         .setDescription(`${global.errorIcon}  Invalid position number`)
         .setColor(process.env.ERROR_COLOR)
       return interaction.reply({ embeds: [embed] })
     }
 
-    const removedTrack = global.tracks[index]
-    global.tracks.splice(index, 1)
+    const removedTrack = local.tracks[index]
+    local.tracks.splice(index, 1)
 
     const embed = new EmbedBuilder()
       .setDescription(

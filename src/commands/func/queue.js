@@ -7,7 +7,10 @@ const {
 
 module.exports = {
   callback: async (_, interaction) => {
-    if (global.tracks.length === 0) {
+    const guildId = interaction.guild.id
+    const local = require('../../events/ready/00-register-local-vars')(guildId)
+
+    if (local.tracks.length === 0) {
       const embed = new EmbedBuilder()
         .setDescription(`${global.emptyIcon}  Queue is empty`)
         .setColor(process.env.SECONDARY_COLOR)
@@ -36,8 +39,8 @@ module.exports = {
     )
 
     const itemsPerPage = 10
-    global.currentQueuePage = 1
-    const queueList = global.tracks
+    local.currentQueuePage = 1
+    const queueList = local.tracks
       .slice(0, itemsPerPage)
       .map(
         (track, index) =>

@@ -8,12 +8,14 @@ const {
 
 const SpotifyWebApi = require('spotify-web-api-node')
 const YouTube = require('youtube-sr').default
-
 const play = require('play-dl')
 
 module.exports = {
   callback: async (_, interaction) => {
-    global.interaction = interaction
+    const guildId = interaction.guild.id
+    const local = require('../../events/ready/00-register-local-vars')(guildId)
+
+    local.inter = interaction
 
     // Establish Spotify API connection
     const spotifyApi = new SpotifyWebApi({
@@ -34,14 +36,14 @@ module.exports = {
       if (input.includes('spotify.com/track/')) {
         const trackId = input.split('spotify.com/track/')[1].split('?')[0]
         const trackData = await spotifyApi.getTrack(trackId)
-        global.tracks.push(trackData.body)
+        local.tracks.push(trackData.body)
       }
       // Album URL
       else if (input.includes('spotify.com/album/')) {
         const albumId = input.split('spotify.com/album/')[1].split('?')[0]
         const albumData = await spotifyApi.getAlbum(albumId)
         const albumTracks = albumData.body.tracks.items
-        global.tracks.push(...albumTracks)
+        local.tracks.push(...albumTracks)
       }
       // Playlist URL
       else if (input.includes('spotify.com/playlist/')) {
@@ -54,7 +56,7 @@ module.exports = {
             offset,
           })
           const playlistTracks = playlistData.body.items
-          global.tracks.push(...playlistTracks.map((item) => item.track))
+          local.tracks.push(...playlistTracks.map((item) => item.track))
 
           offset += playlistTracks.length
           hasNextPage = playlistData.body.next !== null
@@ -63,7 +65,7 @@ module.exports = {
       // Track w/ song name and artist
       else {
         const searchResult = await spotifyApi.searchTracks(input)
-        global.tracks.push(searchResult.body.tracks.items[0])
+        local.tracks.push(searchResult.body.tracks.items[0])
       }
     } catch (error) {
       console.log('> [play] error:', error.message)
@@ -74,7 +76,7 @@ module.exports = {
     }
 
     // Not sure if still needed
-    if (global.tracks.length === 0) {
+    if (local.tracks.length === 0) {
       const embed = new EmbedBuilder()
         .setDescription(
           `${global.errorIcon}  Please ensure a song or url is requested`,
@@ -84,7 +86,7 @@ module.exports = {
     }
 
     // Check if a song is currently playing
-    if (global.connection && global.player.state.status === 'playing') {
+    if (local.connection && local.player.state.status === 'playing') {
       console.log('> [play] track(s) added')
       const embed = new EmbedBuilder()
         .setDescription(`${global.addedIcon}  Track(s) added to the queue`)
@@ -95,7 +97,7 @@ module.exports = {
     // Deferring the interaction
     await interaction.deferReply()
 
-    global.player = createAudioPlayer({
+    local.player = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Play,
       },
@@ -104,9 +106,9 @@ module.exports = {
     let isFirstIteraction = true
 
     // Play all tracks added
-    while (global.tracks.length > 0) {
+    while (local.tracks.length > 0) {
       // Get the next track
-      const track = global.tracks.shift()
+      const track = local.tracks.shift()
       const trackUrl = track.external_urls.spotify
       const trackName = track.name
       // const artistName = track.artists[0].name
@@ -121,7 +123,7 @@ module.exports = {
       const ytTrackUrl = `https://music.youtube.com/watch?v=${ytSearchResult[0].id}`
 
       // Check if the bot is in a voice channel
-      if (!global.connection) {
+      if (!local.connection) {
         // Join the voice channel
         const channel = interaction.member.voice.channel
         if (!channel) {
@@ -132,7 +134,7 @@ module.exports = {
             .setColor(process.env.ERROR_COLOR)
           return interaction.editReply({ embeds: [embed] })
         }
-        global.connection = joinVoiceChannel({
+        local.connection = joinVoiceChannel({
           channelId: channel.id,
           guildId: channel.guild.id,
           adapterCreator: channel.guild.voiceAdapterCreator,
@@ -144,8 +146,8 @@ module.exports = {
       const resource = createAudioResource(stream.stream, {
         inputType: stream.type,
       })
-      global.player.play(resource)
-      global.connection.subscribe(global.player)
+      local.player.play(resource)
+      local.connection.subscribe(local.player)
 
       // Interaction reply
       const embed = new EmbedBuilder()
@@ -162,11 +164,11 @@ module.exports = {
       }
 
       // Wait for the song to finish
-      await new Promise((resolve) => global.player.on('idle', resolve))
+      await new Promise((resolve) => local.player.on('idle', resolve))
     }
 
     // When queue is empty
-    if (global.connection && global.tracks.length === 0) {
+    if (local.connection && local.tracks.length === 0) {
       const embed = new EmbedBuilder()
         .setDescription(
           `${global.stoppedIcon}  Finished playing all songs in queue`,
@@ -177,8 +179,8 @@ module.exports = {
 
     // Auto disconnect after 1 minute
     setTimeout(async () => {
-      if (global.connection && global.player.state.status === 'idle') {
-        global.connection.destroy()
+      if (local.connection && local.player.state.status === 'idle') {
+        local.connection.destroy()
       }
     }, 60000)
   },
