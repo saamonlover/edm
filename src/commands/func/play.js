@@ -13,6 +13,8 @@ const play = require('play-dl')
 
 module.exports = {
   callback: async (_, interaction) => {
+    global.interaction = interaction
+
     // Establish Spotify API connection
     const spotifyApi = new SpotifyWebApi({
       clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -164,33 +166,19 @@ module.exports = {
     }
 
     // When queue is empty
-    if (global.connection) {
+    if (global.connection && global.tracks.length === 0) {
       const embed = new EmbedBuilder()
         .setDescription(
           `${global.stoppedIcon}  Finished playing all songs in queue`,
         )
         .setColor(process.env.PRIMARY_COLOR)
       await interaction.channel.send({ embeds: [embed] })
-    } else {
-      const embed = new EmbedBuilder()
-        .setDescription(
-          `${global.disconnectIcon}  Manually disconnected, queue emptied`,
-        )
-        .setColor(process.env.SECONDARY_COLOR)
-      return interaction.channel.send({ embeds: [embed] })
     }
 
     // Auto disconnect after 1 minute
     setTimeout(async () => {
       if (global.connection && global.player.state.status === 'idle') {
         global.connection.destroy()
-        // Interaction reply
-        const embed = new EmbedBuilder()
-          .setDescription(
-            `${global.disconnectIcon}  Disconnected due to inactivity`,
-          )
-          .setColor(process.env.SECONDARY_COLOR)
-        await interaction.channel.send({ embeds: [embed] })
       }
     }, 60000)
   },

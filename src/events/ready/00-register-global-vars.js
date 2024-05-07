@@ -1,4 +1,6 @@
 module.exports = async (client) => {
+  global.interaction
+
   global.connection
   global.player
   global.tracks = []

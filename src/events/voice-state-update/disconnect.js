@@ -1,3 +1,5 @@
+const { EmbedBuilder } = require('discord.js')
+
 module.exports = async (client, oldState, newState) => {
   // Check if the bot was disconnected from the voice channel
   if (
@@ -13,27 +15,23 @@ module.exports = async (client, oldState, newState) => {
     global.player.stop()
 
     console.log('> [voice-state-update] dsisconnected')
-  }
 
-  /* // Give out temporary notice
-  if (global.connection) {
-    console.log('> [voice-state-update] dsisconnected')
     const embed = new EmbedBuilder()
-      .setDescription(
-        'Disconnected from voice channel (queue cleared if there is any)',
-      )
-      .setColor('#FF0000')
-    const embedMessage = await interaction.reply({
-      embeds: [embed],
-      fetchReply: true,
-    })
-    // Delete the embed message after 5 seconds
-    setTimeout(() => {
-      embedMessage.delete()
-    }, 5000)
-
-    return
-  } else {
-    console.log(1)
-  } */
+    if (global.player.state.status === 'idle') {
+      embed
+        .setDescription(
+          `${global.disconnectIcon}  Disconnected due to inactivity`,
+        )
+        .setColor(process.env.SECONDARY_COLOR)
+    } else {
+      embed
+        .setDescription(
+          `${global.disconnectIcon}  Manually disconnected, queue emptied`,
+        )
+        .setColor(process.env.SECONDARY_COLOR)
+    }
+    if (global.interaction) {
+      return global.interaction.channel.send({ embeds: [embed] })
+    }
+  }
 }
