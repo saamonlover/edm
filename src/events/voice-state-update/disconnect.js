@@ -19,7 +19,7 @@ module.exports = async (client, oldState, newState) => {
       local.player.stop()
     }
 
-    console.log('> [voice-state-update] dsisconnected')
+    console.log(`> [voice-state-update] disconnected (${guildId})`)
 
     const embed = new EmbedBuilder()
     if (local.player.state.status === 'idle') {

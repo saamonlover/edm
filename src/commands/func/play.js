@@ -68,7 +68,7 @@ module.exports = {
         local.tracks.push(searchResult.body.tracks.items[0])
       }
     } catch (error) {
-      console.log('> [play] error:', error.message)
+      console.log(`> [play] error: ${error.message} (${guildId})`)
       const embed = new EmbedBuilder()
         .setDescription(`${global.errorIcon}  Error adding song`)
         .setColor(process.env.ERROR_COLOR)
@@ -87,7 +87,7 @@ module.exports = {
 
     // Check if a song is currently playing
     if (local.connection && local.player.state.status === 'playing') {
-      console.log('> [play] track(s) added')
+      console.log(`> [play] track(s) added (${guildId})`)
       const embed = new EmbedBuilder()
         .setDescription(`${global.addedIcon}  Track(s) added to the queue`)
         .setColor(process.env.SECONDARY_COLOR)
@@ -148,6 +148,7 @@ module.exports = {
       })
       local.player.play(resource)
       local.connection.subscribe(local.player)
+      console.log(`> [play] started playing (${guildId})`)
 
       // Interaction reply
       const embed = new EmbedBuilder()
@@ -169,6 +170,7 @@ module.exports = {
 
     // When queue is empty
     if (local.connection && local.tracks.length === 0) {
+      console.log(`> [play] finished playing (${guildId})`)
       const embed = new EmbedBuilder()
         .setDescription(
           `${global.stoppedIcon}  Finished playing all songs in queue`,
