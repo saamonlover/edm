@@ -14,6 +14,7 @@ module.exports = {
   callback: async (_, interaction) => {
     const guildId = interaction.guild.id
     const local = require('../../events/ready/00-register-local-vars')(guildId)
+    const head = interaction.options.getBoolean('head')
 
     local.inter = interaction
 
@@ -36,14 +37,18 @@ module.exports = {
       if (input.includes('spotify.com/track/')) {
         const trackId = input.split('spotify.com/track/')[1].split('?')[0]
         const trackData = await spotifyApi.getTrack(trackId)
-        local.tracks.push(trackData.body)
+
+        if (head) local.tracks.unshift(trackData.body)
+        else local.tracks.push(trackData.body)
       }
       // Album URL
       else if (input.includes('spotify.com/album/')) {
         const albumId = input.split('spotify.com/album/')[1].split('?')[0]
         const albumData = await spotifyApi.getAlbum(albumId)
         const albumTracks = albumData.body.tracks.items
-        local.tracks.push(...albumTracks)
+
+        if (head) local.tracks.unshift(...albumTracks)
+        else local.tracks.push(...albumTracks)
       }
       // Playlist URL
       else if (input.includes('spotify.com/playlist/')) {
@@ -56,7 +61,10 @@ module.exports = {
             offset,
           })
           const playlistTracks = playlistData.body.items
-          local.tracks.push(...playlistTracks.map((item) => item.track))
+
+          if (head)
+            local.tracks.unshift(...playlistTracks.map((item) => item.track))
+          else local.tracks.push(...playlistTracks.map((item) => item.track))
 
           offset += playlistTracks.length
           hasNextPage = playlistData.body.next !== null
@@ -65,7 +73,8 @@ module.exports = {
       // Track w/ song name and artist
       else {
         const searchResult = await spotifyApi.searchTracks(input)
-        local.tracks.push(searchResult.body.tracks.items[0])
+        if (head) local.tracks.unshift(searchResult.body.tracks.items[0])
+        else local.tracks.push(searchResult.body.tracks.items[0])
       }
     } catch (error) {
       console.log(`> [play] error: ${error.message} (${guildId})`)
@@ -195,6 +204,12 @@ module.exports = {
         name: 'input',
         description: 'Song name and artist / Spotify URL',
         required: true,
+      },
+      {
+        type: 5,
+        name: 'head',
+        description: 'Add track to the head of the queue',
+        required: false,
       },
     ],
   },
