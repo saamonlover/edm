@@ -14,7 +14,7 @@ module.exports = {
   callback: async (_, interaction) => {
     const guildId = interaction.guild.id
     const local = require('../../events/ready/00-register-local-vars')(guildId)
-    const head = interaction.options.getBoolean('head')
+    const position = interaction.options.getInteger('position')
 
     local.inter = interaction
 
@@ -32,23 +32,38 @@ module.exports = {
     // Get search input
     const input = interaction.options.getString('input')
 
+    const addTrack = (tracks) => {
+      tracks = Array.isArray(tracks) ? tracks : [tracks]
+      if (local.tracks.length !== 0) tracks = tracks.reverse()
+
+      for (const trackData of tracks) {
+        if (position !== null) {
+          if (position < 0) {
+            const embed = new EmbedBuilder()
+              .setDescription(`${global.errorIcon}  Invalid position`)
+              .setColor(process.env.ERROR_COLOR)
+            return interaction.reply({ embeds: [embed] })
+          }
+          local.tracks.splice(position - 1, 0, trackData)
+        } else {
+          local.tracks.push(trackData)
+        }
+      }
+    }
+
     try {
       // Track URL
       if (input.includes('spotify.com/track/')) {
         const trackId = input.split('spotify.com/track/')[1].split('?')[0]
         const trackData = await spotifyApi.getTrack(trackId)
-
-        if (head) local.tracks.unshift(trackData.body)
-        else local.tracks.push(trackData.body)
+        addTrack(trackData.body)
       }
       // Album URL
       else if (input.includes('spotify.com/album/')) {
         const albumId = input.split('spotify.com/album/')[1].split('?')[0]
         const albumData = await spotifyApi.getAlbum(albumId)
         const albumTracks = albumData.body.tracks.items
-
-        if (head) local.tracks.unshift(...albumTracks)
-        else local.tracks.push(...albumTracks)
+        addTrack(albumTracks)
       }
       // Playlist URL
       else if (input.includes('spotify.com/playlist/')) {
@@ -62,9 +77,7 @@ module.exports = {
           })
           const playlistTracks = playlistData.body.items
 
-          if (head)
-            local.tracks.unshift(...playlistTracks.map((item) => item.track))
-          else local.tracks.push(...playlistTracks.map((item) => item.track))
+          addTrack(playlistTracks.map((item) => item.track))
 
           offset += playlistTracks.length
           hasNextPage = playlistData.body.next !== null
@@ -73,8 +86,7 @@ module.exports = {
       // Track w/ song name and artist
       else {
         const searchResult = await spotifyApi.searchTracks(input)
-        if (head) local.tracks.unshift(searchResult.body.tracks.items[0])
-        else local.tracks.push(searchResult.body.tracks.items[0])
+        addTrack(searchResult.body.tracks.items[0])
       }
     } catch (error) {
       console.log(`> [play] error: ${error.message} (${guildId})`)
@@ -202,13 +214,14 @@ module.exports = {
       {
         type: 3,
         name: 'input',
-        description: 'Song name and artist / Spotify URL',
+        description:
+          'Song name and artist / Spotify URL (add to the tail of the queue as default)',
         required: true,
       },
       {
-        type: 5,
-        name: 'head',
-        description: 'Add track to the head of the queue',
+        type: 4,
+        name: 'position',
+        description: 'Position you want your track in the queue at',
         required: false,
       },
     ],
