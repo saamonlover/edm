@@ -39,6 +39,7 @@ module.exports = {
       for (const trackData of tracks) {
         if (position !== null) {
           if (position < 0) {
+            console.log(`> [play] error: invalid position (${guildId})`)
             const embed = new EmbedBuilder()
               .setDescription(`${global.errorIcon}  Invalid position`)
               .setColor(process.env.ERROR_COLOR)
