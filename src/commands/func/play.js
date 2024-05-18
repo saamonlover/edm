@@ -72,17 +72,18 @@ module.exports = {
         let hasNextPage = true
         let offset = 0
 
+        let allPlayListTracks = []
         while (hasNextPage) {
           const playlistData = await spotifyApi.getPlaylistTracks(playlistId, {
             offset,
           })
           const playlistTracks = playlistData.body.items
-
-          addTrack(playlistTracks.map((item) => item.track))
-
+          allPlayListTracks.push(...playlistTracks.map((item) => item.track))
           offset += playlistTracks.length
           hasNextPage = playlistData.body.next !== null
         }
+
+        addTrack(allPlayListTracks)
       }
       // Track w/ song name and artist
       else {
