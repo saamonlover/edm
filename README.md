@@ -7,7 +7,7 @@ A discord muisic bot that supports searching Spotify tracks, playlists, and albu
 ### Status
 
 - Help me to get it verified via [Direct Invite](https://discord.com/oauth2/authorize?client_id=1233204961337413704&permissions=2150983680&scope=applications.commands+bot) to your server!
-- It is also under review on Top.gg
+- The bot is under maintenance for now
 
 ## Teckstack
 
